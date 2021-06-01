@@ -2,7 +2,6 @@ import re
 
 
 def is_german_plate(plate_str: str) -> bool:
-    plate_str = plate_str.upper()
     if re.match(r"^[A-ZÄÖÜ]{1,3}\-[A-Z]{1,2}[1-9]{1}[0-9]{0,3}$", plate_str):
         return True
     return False

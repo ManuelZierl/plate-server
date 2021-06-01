@@ -24,6 +24,7 @@ class Plate(db.Model):
 def _plate():
     if request.method == "POST":
         if plate_str := request.form.get("plate"):
+            plate_str = plate_str.upper()
             if not is_german_plate(plate_str):
                 raise NotAPlate()
             plate = Plate(plate_str=plate_str)
@@ -51,7 +52,7 @@ def plate_search():
     levenshtein = request.args.get("levenshtein", "x")
     levenshtein = int(levenshtein) if levenshtein.isdigit() else None
 
-    if key != None and levenshtein != None:
+    if key is not None and levenshtein is not None:
         all_plates = Plate.query.all()
         all_plates = [{"_plate": x.plate_str.replace("-", ""), "plate": x.plate_str,
                        "timestamp": x.timestamp.strftime("%Y-%m-%dT%H:%M:%SZ")}

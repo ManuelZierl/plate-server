@@ -15,6 +15,10 @@ class TestApp(unittest.TestCase):
         db.drop_all()
 
     def test_plate_post_and_get(self):
+        response = self.client.get("/plate")
+        json_response = response.get_json()
+        self.assertEqual(json_response, [])
+
         cases = [
             ["M-ZG134", True],
             ["MHL-H8866", True],
@@ -31,7 +35,7 @@ class TestApp(unittest.TestCase):
             self.assertEqual(response.status_code, 200 if valid else 422)
             json_response = response.get_json()
             if valid:
-                self.assertEqual(json_response.get("plate"), plate_str)
+                self.assertEqual(json_response.get("plate"), plate_str.upper())
             self.assertEqual(json_response.get("success"), valid)
 
         response = self.client.get("/plate")
@@ -40,8 +44,8 @@ class TestApp(unittest.TestCase):
         self.assertEqual(set(x["plate"] for x in json_response), {
             "M-ZG134",
             "MHL-H8866",
-            "AÖ-Ih4",
-            "QLB-kL77"
+            "AÖ-IH4",
+            "QLB-KL77"
         })
 
     def test_plate_search(self):
@@ -85,8 +89,8 @@ class TestUtils(unittest.TestCase):
         self.assertTrue(is_german_plate("N-C33"))
         self.assertTrue(is_german_plate("NE-A2"))
         self.assertTrue(is_german_plate("NES-ZU6"))
-        self.assertFalse(is_german_plate("MÜRAB1234"))  # no hypne
-        self.assertFalse(is_german_plate("N-Ä33"))  # umlaut after hypne
+        self.assertFalse(is_german_plate("MÜRAB1234"))  # no hyphen
+        self.assertFalse(is_german_plate("N-Ä33"))  # umlaut after hyphen
         self.assertFalse(is_german_plate("NE-A02"))  # starting 0
         self.assertFalse(is_german_plate("NES-ZU66667"))  # too long
 
