@@ -48,7 +48,7 @@ def _plate():
 @app.route("/search-plate", methods=["GET"])
 def plate_search():
     key = request.args.get("key")
-    levenshtein = request.args.get("levenshtein")
+    levenshtein = request.args.get("levenshtein", "x")
     levenshtein = int(levenshtein) if levenshtein.isdigit() else None
 
     if key != None and levenshtein != None:

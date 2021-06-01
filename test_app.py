@@ -74,6 +74,10 @@ class TestApp(unittest.TestCase):
         self.assertFalse(response.get_json()["success"])
         self.assertEqual(response.status_code, 400)
 
+        response = self.client.get("/search-plate?key=MZG132")
+        self.assertFalse(response.get_json()["success"])
+        self.assertEqual(response.status_code, 400)
+
 
 class TestUtils(unittest.TestCase):
     def test_is_german_plate(self):
