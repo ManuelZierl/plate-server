@@ -47,7 +47,11 @@ def _plate():
 
 @app.route("/search-plate", methods=["GET"])
 def plate_search():
-    if (key := request.args.get("key")) and (levenshtein := int(request.args.get("levenshtein"))):
+    key = request.args.get("key")
+    levenshtein = request.args.get("levenshtein")
+    levenshtein = int(levenshtein) if levenshtein.isdigit() else None
+
+    if key != None and levenshtein != None:
         all_plates = Plate.query.all()
         all_plates = [{"_plate": x.plate_str.replace("-", ""), "plate": x.plate_str,
                        "timestamp": x.timestamp.strftime("%Y-%m-%dT%H:%M:%SZ")}

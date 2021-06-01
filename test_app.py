@@ -44,6 +44,36 @@ class TestApp(unittest.TestCase):
             "QLB-kL77"
         })
 
+    def test_plate_search(self):
+        plates = ["M-ZG134", "ÖR-ZG134", "M-Z1002", "A-G104", "A-ZG134"]
+        for plt in plates:
+            self.client.post("/plate", data={"plate": plt})
+
+        response = self.client.get("/search-plate?key=MZG134&levenshtein=0")
+        self.assertEqual(set(x["plate"] for x in response.get_json()["MZG134"]), {"M-ZG134"})
+
+        response = self.client.get("/search-plate?key=MZG134&levenshtein=1")
+        self.assertEqual(set(x["plate"] for x in response.get_json()["MZG134"]), {"M-ZG134", "A-ZG134"})
+
+        response = self.client.get("/search-plate?key=MZG134&levenshtein=2")
+        self.assertEqual(set(x["plate"] for x in response.get_json()["MZG134"]), {"M-ZG134", "ÖR-ZG134", "A-ZG134"})
+
+        response = self.client.get("/search-plate?key=MZG134&levenshtein=3")
+        self.assertEqual(set(x["plate"] for x in response.get_json()["MZG134"]),
+                         {"M-ZG134", "ÖR-ZG134", "A-G104", "A-ZG134"})
+
+        response = self.client.get("/search-plate?key=MZG134&levenshtein=4")
+        self.assertEqual(set(x["plate"] for x in response.get_json()["MZG134"]),
+                         {"M-ZG134", "ÖR-ZG134", "M-Z1002", "A-G104", "A-ZG134"})
+
+        response = self.client.get("/search-plate?key=MZG134&levenshtein=notanint")
+        self.assertFalse(response.get_json()["success"])
+        self.assertEqual(response.status_code, 400)
+
+        response = self.client.get("/search-plate?levenshtein=2")
+        self.assertFalse(response.get_json()["success"])
+        self.assertEqual(response.status_code, 400)
+
 
 class TestUtils(unittest.TestCase):
     def test_is_german_plate(self):
